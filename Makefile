@@ -1,6 +1,6 @@
 # LIB
 V=0.1.0
-PREFIX=/opt/projects/github/crate/crate-odbc
+PREFIX=$(PWD)
 LIBDIR=$(PREFIX)/lib/
 LIBNAME=libcrateodbc.so
 LIB_OPTION= -shared
@@ -41,14 +41,18 @@ clean:
 	rm -f tests/odbc/*.o
 	rm -f examples/*.o
 
+define set_path_and_run
+export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(PREFIX)/lib; \
+$(PREFIX)/$@
+endef
 # tests
 tests/odbc/%.o: tests/odbc/%.c
 	$(CC) $(CFLAGS) -o $@ $< $(DRIVER_LIBS)
-	-$@
+	$(set_path_and_run)
 tests: $(TESTS)
 
 # examples
 examples/%.o: examples/%.c
 	$(CC) $(CFLAGS) $(EXAMPLE_LIBS) -o $@ $< $(DRIVER_LIBS)
-	-$@
+	$(set_path_and_run)
 examples: $(EXAMPLES)
